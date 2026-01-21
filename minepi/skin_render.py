@@ -76,6 +76,10 @@ class Render:
         self.display_cape = display_cape if player.raw_cape else False
         self.layers = display_layers
         self.player = player
+
+        self.hd_ratio = self.player.raw_skin.size[0] / 64
+        self.scale_fix = 1 / self.hd_ratio
+
         self.aa = aa
         self.rendered_image = None
 
@@ -1863,9 +1867,14 @@ class Point:
         return self.dest_coords[2]
 
     def project(self, offset: np.array, rotation_matrix: np.array):
-        self.dest_coords = np.dot(
+        coords = np.dot(
             np.dot(self.origin_coords - offset, rotation_matrix) + offset, self.super.body_angles["general"]
         )
+
+        # HD scale compensation
+        coords = coords * self.super.scale_fix
+
+        self.dest_coords = coords
 
         self.super.min_x = min(self.super.min_x, self.dest_coords[0])
         self.super.max_x = max(self.super.max_x, self.dest_coords[0])
