@@ -723,28 +723,32 @@ class Render:
                 for i in range(0, 11 * hd_ratio):
                     for j in range(0, 17 * hd_ratio):
                         volume_points = append_dict(volume_points, i, j, 0,
-                                                    Point(self, np.array([i - 1, j + 8 * hd_ratio, -1])))
+                                                    Point(self, np.array([i - 1 * hd_ratio, j + 8 * hd_ratio, -1 * hd_ratio])))
                         volume_points = append_dict(volume_points, i, j, 1 * hd_ratio,
-                                                    Point(self, np.array([i - 1, j + 8 * hd_ratio, 0])))
+                                                    Point(self, np.array([i - 1 * hd_ratio, j + 8 * hd_ratio, 0])))
 
                 for j in range(0, 17 * hd_ratio):
                     for k in range(0, 2 * hd_ratio):
                         volume_points = append_dict(volume_points, 0, j, k,
-                                                    Point(self, np.array([0, j + 8 * hd_ratio, k])))
-                        volume_points = append_dict(volume_points, 8 * hd_ratio, j, k,
-                                                    Point(self, np.array([8 * hd_ratio, j + 8 * hd_ratio, k])))
+                                                    Point(self, np.array([-1 * hd_ratio, j + 8 * hd_ratio, k - 1 * hd_ratio])))
+                        volume_points = append_dict(volume_points, 10 * hd_ratio, j, k,
+                                                    Point(self, np.array([9 * hd_ratio, j + 8 * hd_ratio, k - 1 * hd_ratio])))
 
                 for i in range(0, 11 * hd_ratio):
                     for k in range(0, 2 * hd_ratio):
                         volume_points = append_dict(volume_points, i, 0, k,
-                                                    Point(self, np.array([i, 8 * hd_ratio, k])))
-                        volume_points = append_dict(volume_points, i, 12 * hd_ratio, k,
-                                                    Point(self, np.array([i, 20 * hd_ratio, k])))
+                                                    Point(self, np.array([i - 1 * hd_ratio, 8 * hd_ratio, k - 1 * hd_ratio])))
+                        volume_points = append_dict(volume_points, i, 16 * hd_ratio, k,
+                                                    Point(self, np.array([i - 1 * hd_ratio, 24 * hd_ratio, k - 1 * hd_ratio])))
 
+                cape_hd_ratio = int(im_cape.size[0] / 64)
+                
                 if "back" in self.visible_faces["cape"]["front"]:
                     for i in range(0, 10 * hd_ratio):
                         for j in range(0, 16 * hd_ratio):
-                            color = im_cape.getpixel(((11 * hd_ratio - 1) - i, 1 * hd_ratio + j))
+                            tex_x = int(((11 * cape_hd_ratio - 1) - i * cape_hd_ratio / hd_ratio))
+                            tex_y = int((1 * cape_hd_ratio + j * cape_hd_ratio / hd_ratio))
+                            color = im_cape.getpixel((tex_x, tex_y))
                             if color[3] != 0:
                                 self.polygons["cape"]["back"].append(Polygon([
                                     volume_points[i][j][0],
@@ -756,7 +760,9 @@ class Render:
                 if "front" in self.visible_faces["cape"]["front"]:
                     for i in range(0, 10 * hd_ratio):
                         for j in range(0, 16 * hd_ratio):
-                            color = im_cape.getpixel((12 * hd_ratio + i, 1 * hd_ratio + j))
+                            tex_x = int((12 * cape_hd_ratio + i * cape_hd_ratio / hd_ratio))
+                            tex_y = int((1 * cape_hd_ratio + j * cape_hd_ratio / hd_ratio))
+                            color = im_cape.getpixel((tex_x, tex_y))
                             if color[3] != 0:
                                 self.polygons["cape"]["front"].append(Polygon([
                                     volume_points[i][j][1 * hd_ratio],
@@ -767,46 +773,54 @@ class Render:
 
                 if "right" in self.visible_faces["cape"]["front"]:
                     for j in range(0, 16 * hd_ratio):
-                        color = im_cape.getpixel((12 * hd_ratio, 1 * hd_ratio + j))
+                        tex_x = 0
+                        tex_y = int((1 * cape_hd_ratio + j * cape_hd_ratio / hd_ratio))
+                        color = im_cape.getpixel((tex_x, tex_y))
                         if color[3] != 0:
                             self.polygons["cape"]["right"].append(Polygon([
                                 volume_points[0][j][0],
-                                volume_points[0][j][1],
-                                volume_points[0][j + 1][1],
+                                volume_points[0][j][1 * hd_ratio],
+                                volume_points[0][j + 1][1 * hd_ratio],
                                 volume_points[0][j + 1][0]],
                                 color))
 
                 if "left" in self.visible_faces["cape"]["front"]:
                     for j in range(0, 16 * hd_ratio):
-                        color = im_cape.getpixel((1 * hd_ratio, 1 * hd_ratio + j))
+                        tex_x = 11 * cape_hd_ratio
+                        tex_y = int((1 * cape_hd_ratio + j * cape_hd_ratio / hd_ratio))
+                        color = im_cape.getpixel((tex_x, tex_y))
                         if color[3] != 0:
                             self.polygons["cape"]["left"].append(Polygon([
                                 volume_points[10 * hd_ratio][j][0],
-                                volume_points[10 * hd_ratio][j][1],
-                                volume_points[10 * hd_ratio][j + 1][1],
+                                volume_points[10 * hd_ratio][j][1 * hd_ratio],
+                                volume_points[10 * hd_ratio][j + 1][1 * hd_ratio],
                                 volume_points[10 * hd_ratio][j + 1][0]],
                                 color))
 
                 if "top" in self.visible_faces["cape"]["front"]:
                     for i in range(0, 10 * hd_ratio):
-                        color = im_cape.getpixel((1 + i, 0))
+                        tex_x = int((1 * cape_hd_ratio + i * cape_hd_ratio / hd_ratio))
+                        tex_y = 0
+                        color = im_cape.getpixel((tex_x, tex_y))
                         if color[3] != 0:
                             self.polygons["cape"]["top"].append(Polygon([
                                 volume_points[i][0][0],
                                 volume_points[i + 1][0][0],
-                                volume_points[i + 1][0][1],
-                                volume_points[i][0][1]],
+                                volume_points[i + 1][0][1 * hd_ratio],
+                                volume_points[i][0][1 * hd_ratio]],
                                 color))
 
                 if "bottom" in self.visible_faces["cape"]["front"]:
                     for i in range(0, 10 * hd_ratio):
-                        color = im_cape.getpixel((11 * hd_ratio + i, 0))
+                        tex_x = int((11 * cape_hd_ratio + i * cape_hd_ratio / hd_ratio))
+                        tex_y = 0
+                        color = im_cape.getpixel((tex_x, tex_y))
                         if color[3] != 0:
                             self.polygons["cape"]["bottom"].append(Polygon([
                                 volume_points[i][16 * hd_ratio][0],
                                 volume_points[i + 1][16 * hd_ratio][0],
-                                volume_points[i + 1][16 * hd_ratio][1],
-                                volume_points[i][16 * hd_ratio][1]],
+                                volume_points[i + 1][16 * hd_ratio][1 * hd_ratio],
+                                volume_points[i][16 * hd_ratio][1 * hd_ratio]],
                                 color))
 
             start = 1 if self.player.is_slim else 0
